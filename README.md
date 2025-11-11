@@ -19,3 +19,16 @@ Trabajo Final Integrador de Programación II – Sistema de gestión de mascotas
 **Carrera:** Tecnicatura Universitaria en Programación – UTN  
 **Materia:** Programación II  
 **Año:** 2025
+
+ ---
+
+## Descripción del dominio elegido
+
+
+## Requisitos
+
+
+## Pasos para crear la base de datos a partir del .sql
+
+
+## Instrucciones para compilar y ejecutar
