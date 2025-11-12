@@ -61,4 +61,13 @@ public class Microchip extends Base {
         this.fechaImplantacion = fechaImplantacion;
     }
 
+    @Override
+    public String toString() {
+        return "Microchip{" +
+                "codigo='" + codigo + '\'' +
+                ", fechaImplantacion=" + fechaImplantacion +
+                ", veterinaria='" + veterinaria + '\'' +
+                ", observaciones='" + observaciones + '\'' +
+                '}';
+    }
 }
