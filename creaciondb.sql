@@ -34,5 +34,5 @@ CREATE TABLE IF NOT EXISTS Mascota (
     fechaNacimiento DATE,
     duenio VARCHAR(120) NOT NULL,
     microchip_id BIGINT UNIQUE,
-    FOREIGN KEY (microchip_id) REFERENCES Microchip(id)
+    FOREIGN KEY (microchip_id) REFERENCES Microchip(id) ON DELETE CASCADE
 );
