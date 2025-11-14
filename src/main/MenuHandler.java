@@ -1,17 +1,18 @@
 package main;
 
-import java.util.List;
 import java.util.Scanner;
+import service.MascotaService;
+import service.MicrochipService;
 
 
 public class MenuHandler {
     private final Scanner scanner;
-    private final MascotaServiceImpl mascotaService;
-    private final MicrochipServiceImpl microchipService;
+    private final MascotaService mascotaService;
+    private final MicrochipService microchipService;
 
     public MenuHandler(Scanner scanner,
-                       MascotaServiceImpl mascotaService,
-                       MicrochipServiceImpl microchipService) {
+                       MascotaService mascotaService,
+                       MicrochipService microchipService) {
 
         this.scanner = scanner;
         this.mascotaService = mascotaService;

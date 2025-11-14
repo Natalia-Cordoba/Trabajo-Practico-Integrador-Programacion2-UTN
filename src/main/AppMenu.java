@@ -1,14 +1,15 @@
 package main;
 
-import models.Mascota;
-import models.Microchip;
-import service.MascotaServiceImpl;
-import service.MicrochipServiceImpl;
+import config.DatabaseConnection;
+import dao.GenericDAO;
 import dao.MascotaDAO;
 import dao.MicrochipDAO;
-
+import service.MascotaService;
+import service.MicrochipService;
+import java.sql.Connection;
 import java.util.Scanner;
-import java.util.List;
+import models.Mascota;
+
 
 /**
  * Responsabilidades:
@@ -25,17 +26,29 @@ public class AppMenu {
     private final MenuHandler menuHandler;
     private boolean running;
     
-
-
 public AppMenu() {
     this.scanner = new Scanner(System.in);
+    
+    try {
+        // Crear DAOs
+        MicrochipDAO microchipDAO = new MicrochipDAO();
+        GenericDAO<Mascota> mascotaDAO = new MascotaDAO();
 
-    MicrochipServiceImpl microchipService = new MicrochipServiceImpl();
-    MascotaServiceImpl mascotaService = new MascotaServiceImpl(microchipService);
+        // Crear conexión compartida para MascotaService
+        Connection connection = DatabaseConnection.getConnection();
 
-    this.menuHandler = new MenuHandler(scanner, mascotaService, microchipService);
-    this.running = true;
-    }
+        // Crear servicios con las dependencias correctas
+        MicrochipService microchipService = new MicrochipService(microchipDAO);
+        MascotaService mascotaService = new MascotaService(mascotaDAO, microchipService, connection);
+
+        // Crear el MenuHandler
+        this.menuHandler = new MenuHandler(scanner, mascotaService, microchipService);
+    } catch (Exception e) {
+        throw new RuntimeException("Error al inicializar servicios y DAOs: " + e.getMessage(), e);
+    } 
+    
+    this.running = true;  
+}
 
 public static void main(String[] args) {
         AppMenu app = new AppMenu();
