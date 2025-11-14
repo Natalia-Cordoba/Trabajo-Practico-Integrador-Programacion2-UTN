@@ -4,8 +4,12 @@
  */
 package service;
 
-import prog2int.Dao.GenericDAO;
+import prog2int.Dao.MascotaDAO;
+import prog2int.Dao.MicrochipDAO;
 import prog2int.Models.Mascota;
+import prog2int.Models.Microchip;
+
+
 import java.sql.Connection;
 import java.util.List;
 
