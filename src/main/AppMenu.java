@@ -26,36 +26,31 @@ public class AppMenu {
     private final MenuHandler menuHandler;
     private boolean running;
     
-public AppMenu() {
-    this.scanner = new Scanner(System.in);
-    
-    try {
-        // Crear DAOs
-        MicrochipDAO microchipDAO = new MicrochipDAO();
-        GenericDAO<Mascota> mascotaDAO = new MascotaDAO();
+    public AppMenu() {
+        this.scanner = new Scanner(System.in);
 
-        // Crear conexión compartida para MascotaService
-        Connection connection = DatabaseConnection.getConnection();
+        try {
+            // Crear DAOs
+            MicrochipDAO microchipDAO = new MicrochipDAO();
+            GenericDAO<Mascota> mascotaDAO = new MascotaDAO();
 
-        // Crear servicios con las dependencias correctas
-        MicrochipService microchipService = new MicrochipService(microchipDAO);
-        MascotaService mascotaService = new MascotaService(mascotaDAO, microchipService, connection);
+            // Crear conexión compartida para MascotaService
+            Connection connection = DatabaseConnection.getConnection();
 
-        // Crear el MenuHandler
-        this.menuHandler = new MenuHandler(scanner, mascotaService, microchipService);
-    } catch (Exception e) {
-        throw new RuntimeException("Error al inicializar servicios y DAOs: " + e.getMessage(), e);
-    } 
-    
-    this.running = true;  
-}
+            // Crear servicios con las dependencias correctas
+            MicrochipService microchipService = new MicrochipService(microchipDAO);
+            MascotaService mascotaService = new MascotaService(mascotaDAO, microchipService, connection);
 
-public static void main(String[] args) {
-        AppMenu app = new AppMenu();
-        app.run();
+            // Crear el MenuHandler
+            this.menuHandler = new MenuHandler(scanner, mascotaService, microchipService);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al inicializar servicios y DAOs: " + e.getMessage(), e);
+        } 
+
+        this.running = true;  
     }
 
-public void run() {
+    public void run() {
         while (running) {
             try {
                 MenuDisplay.mostrarMenuPrincipal();
