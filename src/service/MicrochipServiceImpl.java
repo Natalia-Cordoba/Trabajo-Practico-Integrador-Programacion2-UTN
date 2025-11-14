@@ -4,9 +4,13 @@
  */
 package service;
 
-import prog2int.Dao.GenericDAO;
+import prog2int.Dao.GenericDao;
+import Config.DatabaseConnection;
+import Config.TransactionManager;
 import prog2int.Models.Microchip;
 import java.util.List;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Implementación del servicio de negocio para la entidad Microchip.
