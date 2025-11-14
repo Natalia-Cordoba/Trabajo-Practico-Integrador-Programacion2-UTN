@@ -4,11 +4,8 @@
  */
 package service;
 
-import dao.MascotaDAO;
-import dao.MicrochipDAO;
+import dao.GenericDAO;
 import models.Mascota;
-import models.Microchip;
-
 
 import java.sql.Connection;
 import java.util.List;
@@ -25,11 +22,11 @@ import java.util.List;
 public class MascotaService implements GenericService<Mascota> {
 
     private final GenericDAO<Mascota> mascotaDAO;
-    private final MicrochipServiceImpl microchipService;
+    private final MicrochipService microchipService;
     private final Connection connection; // conexión compartida
 
     public MascotaService(GenericDAO<Mascota> mascotaDAO,
-                              MicrochipServiceImpl microchipService,
+                              MicrochipService microchipService,
                               Connection connection) {
         if (mascotaDAO == null || microchipService == null || connection == null) {
             throw new IllegalArgumentException("Dependencias no pueden ser null");

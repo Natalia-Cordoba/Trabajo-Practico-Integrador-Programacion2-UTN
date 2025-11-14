@@ -16,9 +16,9 @@ public class MicrochipDAO implements GenericDAO<Microchip> {
     // Métodos para conexión interna 
     // Delegan a los métodos con la Connection para no duplicar código
     @Override
-    public void crear(Microchip microchip) throws Exception {
+    public void insertar(Microchip microchip) throws Exception {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            crear(microchip, conn);
+            insertar(microchip, conn);
         }
     }
 
@@ -37,23 +37,29 @@ public class MicrochipDAO implements GenericDAO<Microchip> {
     }
 
     @Override
-    public Microchip leer(int id) throws Exception {
+    public Microchip getById(int id) throws Exception {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            return leer(id, conn);
+            return getById(id, conn);
         }
     }
 
     @Override
-    public List<Microchip> leerTodos() throws Exception {
+    public List<Microchip> getAll() throws Exception {
         try (Connection conn = DatabaseConnection.getConnection()) {
-            return leerTodos(conn);
+            return getAll(conn);
+        }
+    }
+    
+    public Microchip buscarPorCodigo(String codigo) throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return buscarPorCodigo(codigo, conn);
         }
     }
     
     // Metodos para conexión externa 
     // Ejecuta la lógica real con PreparedStatement
     @Override
-    public void crear(Microchip microchip, Connection conn) throws Exception {
+    public void insertar(Microchip microchip, Connection conn) throws Exception {
         String sql = "INSERT INTO Microchip (id, eliminado, codigo, fechaImplantacion, veterinaria, observaciones) " +
                      "VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -101,7 +107,7 @@ public class MicrochipDAO implements GenericDAO<Microchip> {
     }
 
     @Override
-    public Microchip leer(int id, Connection conn) throws Exception {
+    public Microchip getById(int id, Connection conn) throws Exception {
         String sql = "SELECT * FROM Microchip WHERE id = ? AND eliminado = FALSE";
         Microchip microchip = null;
 
@@ -124,7 +130,7 @@ public class MicrochipDAO implements GenericDAO<Microchip> {
     }
 
     @Override
-    public List<Microchip> leerTodos(Connection conn) throws Exception {
+    public List<Microchip> getAll(Connection conn) throws Exception {
         String sql = "SELECT * FROM Microchip WHERE eliminado = FALSE";
         List<Microchip> listaMicrochips = new ArrayList<>();
 
@@ -143,6 +149,30 @@ public class MicrochipDAO implements GenericDAO<Microchip> {
             }
         }
         return listaMicrochips;
+    }
+    
+    public Microchip buscarPorCodigo(String codigo, Connection conn) throws Exception {
+        String sql = "SELECT * FROM Microchip WHERE codigo = ? AND eliminado = FALSE";
+        Microchip microchip = null;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, codigo);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    microchip = new Microchip(
+                            rs.getInt("id"),
+                            rs.getString("codigo"),
+                            rs.getString("observaciones"),
+                            rs.getString("veterinaria"),
+                            rs.getDate("fechaImplantacion").toLocalDate()
+                    );
+                }
+            }
+        }
+
+        return microchip;
     }
     
 }

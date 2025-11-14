@@ -5,12 +5,9 @@
 package service;
 
 import dao.GenericDAO;
-import config.DatabaseConnection;
-import config.TransactionManager;
+import dao.MicrochipDAO;
 import models.Microchip;
 import java.util.List;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Implementación del servicio de negocio para la entidad Microchip.
@@ -23,9 +20,9 @@ import java.sql.SQLException;
  */
 public class MicrochipService implements GenericService<Microchip> {
 
-    private final GenericDAO<Microchip> microchipDAO;
+    private final MicrochipDAO microchipDAO;
 
-    public MicrochipServiceImpl(GenericDAO<Microchip> microchipDAO) {
+    public MicrochipService(MicrochipDAO microchipDAO) {
         if (microchipDAO == null) {
             throw new IllegalArgumentException("MicrochipDAO no puede ser null");
         }
