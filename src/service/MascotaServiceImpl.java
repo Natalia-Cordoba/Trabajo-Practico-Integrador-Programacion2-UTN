@@ -4,10 +4,10 @@
  */
 package service;
 
-import prog2int.Dao.MascotaDAO;
-import prog2int.Dao.MicrochipDAO;
-import prog2int.Models.Mascota;
-import prog2int.Models.Microchip;
+import dao.MascotaDAO;
+import dao.MicrochipDAO;
+import models.Mascota;
+import models.Microchip;
 
 
 import java.sql.Connection;

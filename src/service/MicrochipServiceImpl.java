@@ -4,10 +4,10 @@
  */
 package service;
 
-import prog2int.Dao.GenericDao;
-import Config.DatabaseConnection;
-import Config.TransactionManager;
-import prog2int.Models.Microchip;
+import dao.GenericDAO;
+import config.DatabaseConnection;
+import config.TransactionManager;
+import models.Microchip;
 import java.util.List;
 import java.sql.Connection;
 import java.sql.SQLException;

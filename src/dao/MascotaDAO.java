@@ -13,13 +13,51 @@ import java.util.List;
 
 public class MascotaDAO implements GenericDAO<Mascota> {
     
+    // Métodos para conexión interna 
+    // Delegan a los métodos con la Connection para no duplicar código
+    @Override
     public void crear(Mascota mascota) throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            crear(mascota, conn);
+        }
+    }
+
+    @Override
+    public void actualizar(Mascota mascota) throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            actualizar(mascota, conn);
+        }
+    }
+
+    @Override
+    public void eliminar(int id) throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            eliminar(id, conn);
+        }
+    }
+
+    @Override
+    public Mascota leer(int id) throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return leer(id, conn);
+        }
+    }
+
+    @Override
+    public List<Mascota> leerTodos() throws Exception {
+        try (Connection conn = DatabaseConnection.getConnection()) {
+            return leerTodos(conn);
+        }
+    }
+    
+    // Metodos para conexión externa 
+    // Ejecuta la lógica real con PreparedStatement
+    @Override
+    public void crear(Mascota mascota, Connection conn) throws Exception {
         String sql = "INSERT INTO Mascota (id, eliminado, nombre, especie, raza, fechaNacimiento, duenio, microchip_id) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, mascota.getId());
             stmt.setBoolean(2, mascota.isEliminado());
             stmt.setString(3, mascota.getNombre());
@@ -34,12 +72,12 @@ public class MascotaDAO implements GenericDAO<Mascota> {
         }
     }
 
-    public void actualizar(Mascota mascota) throws Exception {
+    @Override
+    public void actualizar(Mascota mascota, Connection conn) throws Exception {
         String sql = "UPDATE Mascota SET nombre=?, especie=?, raza=?, fechaNacimiento=?, duenio=?, microchip_id=? " +
                      "WHERE id=?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, mascota.getNombre());
             stmt.setString(2, mascota.getEspecie());
@@ -54,56 +92,55 @@ public class MascotaDAO implements GenericDAO<Mascota> {
         }
     }
 
-    public void eliminar(int id) throws Exception {
+    @Override
+    public void eliminar(int id, Connection conn) throws Exception {
         String sql = "UPDATE Mascota SET eliminado = TRUE WHERE id = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
     }
 
     @Override
-    public Mascota leer(int id) throws Exception {
+    public Mascota leer(int id, Connection conn) throws Exception {
         String sql = "SELECT * FROM Mascota WHERE id = ? AND eliminado = FALSE";
 
         Mascota mascota = null;
 
-        try (Connection conn = DatabaseConnection.getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                mascota = new Mascota(
-                        rs.getInt("id"),
-                        rs.getString("nombre"),
-                        rs.getString("especie"),
-                        rs.getString("raza"),
-                        rs.getDate("fechaNacimiento") != null ?
-                                rs.getDate("fechaNacimiento").toLocalDate() : null,
-                        rs.getString("duenio")
-                );
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    mascota = new Mascota(
+                            rs.getInt("id"),
+                            rs.getString("nombre"),
+                            rs.getString("especie"),
+                            rs.getString("raza"),
+                            rs.getDate("fechaNacimiento") != null ?
+                                    rs.getDate("fechaNacimiento").toLocalDate() : null,
+                            rs.getString("duenio")
+                    );
 
-                int microchipId = rs.getInt("microchip_id");
-                if (!rs.wasNull()) {
-                    MicrochipDAO microchipDAO = new MicrochipDAO();
-                    mascota.setMicrochip(microchipDAO.leer(microchipId));
+                    int microchipId = rs.getInt("microchip_id");
+                    if (!rs.wasNull()) {
+                        MicrochipDAO microchipDAO = new MicrochipDAO();
+                        mascota.setMicrochip(microchipDAO.leer(microchipId, conn));
+                    }
                 }
             }
         }
         return mascota;
     }
 
-    public List<Mascota> leerTodos() throws Exception {
+    @Override
+    public List<Mascota> leerTodos(Connection conn) throws Exception {
         String sql = "SELECT * FROM Mascota WHERE eliminado = FALSE";
         List<Mascota> listaMascotas = new ArrayList<>();
 
-        try (Connection conn = DatabaseConnection.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 Mascota mascota = new Mascota(
@@ -119,7 +156,7 @@ public class MascotaDAO implements GenericDAO<Mascota> {
                 int microchipId = rs.getInt("microchip_id");
                 if (!rs.wasNull()) {
                     MicrochipDAO microchipDAO = new MicrochipDAO();
-                    mascota.setMicrochip(microchipDAO.leer(microchipId));
+                    mascota.setMicrochip(microchipDAO.leer(microchipId, conn));
                 }
                 
                 listaMascotas.add(mascota);
