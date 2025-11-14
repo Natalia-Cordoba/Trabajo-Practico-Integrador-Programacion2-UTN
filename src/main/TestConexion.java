@@ -4,10 +4,6 @@
  */
 package main;
 
-/**
- *
- * @author natal
- */
 public class TestConexion {
     
 }

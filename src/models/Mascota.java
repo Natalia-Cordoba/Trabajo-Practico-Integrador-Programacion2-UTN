@@ -4,18 +4,13 @@
  */
 package models;
 
-import javax.xml.transform.sax.SAXResult;
 import java.time.LocalDate;
 
-/**
- *
- * @author natal
- */
 public class Mascota extends Base {
     private String nombre;
     private String especie;
     private String raza;
-    private java.time.LocalDate fechaNacimiento;
+    private LocalDate fechaNacimiento;
     private String duenio;
     private Microchip microchip;
 
@@ -72,6 +67,14 @@ public class Mascota extends Base {
         this.duenio = duenio;
     }
 
+    public Microchip getMicrochip() {
+        return microchip;
+    }
+
+    public void setMicrochip(Microchip microchip) {
+        this.microchip = microchip;
+    }    
+    
     @Override
     public String toString() {
         return "Mascota{" +

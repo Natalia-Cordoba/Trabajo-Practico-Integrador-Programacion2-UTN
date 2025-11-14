@@ -4,10 +4,8 @@
  */
 package main;
 
-/**
- *
- * @author natal
- */
 public class Main {
-    
+    public static void main(String[] args) {
+        
+    } 
 }

@@ -4,16 +4,11 @@
  */
 package models;
 
-import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 import java.time.LocalDate;
 
-/**
- *
- * @author natal
- */
 public class Microchip extends Base {
     private String codigo;
-    private java.time.LocalDate fechaImplantacion;
+    private LocalDate fechaImplantacion;
     private String veterinaria;
     private String observaciones;
 

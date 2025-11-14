@@ -4,10 +4,6 @@
  */
 package config;
 
-/**
- *
- * @author natal
- */
 public class TransactionManager {
     
 }

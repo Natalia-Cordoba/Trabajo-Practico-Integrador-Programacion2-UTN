@@ -4,10 +4,6 @@
  */
 package service;
 
-/**
- *
- * @author natal
- */
 public class MascotaServiceImpl {
     
 }

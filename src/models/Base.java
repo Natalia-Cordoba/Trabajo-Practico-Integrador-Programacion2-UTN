@@ -4,15 +4,11 @@
  */
 package models;
 
-/**
- *
- * @author natal
- */
-public class Base {
+public abstract class Base {
     private int id;
-    private Boolean eliminado;
+    private boolean eliminado;
 
-    public Base(int id, Boolean eliminado) {
+    public Base(int id, boolean eliminado) {
         this.id = id;
         this.eliminado = eliminado;
     }
@@ -25,11 +21,11 @@ public class Base {
         this.id = id;
     }
 
-    public Boolean isEliminado() {
+    public boolean isEliminado() {
         return eliminado;
     }
 
-    public void setEliminado(Boolean eliminado) {
+    public void setEliminado(boolean eliminado) {
         this.eliminado = eliminado;
     }
 
