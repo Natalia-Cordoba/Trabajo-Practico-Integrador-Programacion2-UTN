@@ -82,8 +82,7 @@ public class MascotaDAO implements GenericDAO<Mascota> {
             stmt.setString(1, mascota.getNombre());
             stmt.setString(2, mascota.getEspecie());
             stmt.setString(3, mascota.getRaza());
-            stmt.setDate(4, mascota.getFechaNacimiento() != null ?
-                    Date.valueOf(mascota.getFechaNacimiento()) : null);
+            stmt.setDate(4, Date.valueOf(mascota.getFechaNacimiento()));
             stmt.setString(5, mascota.getDuenio());
             stmt.setObject(6, mascota.getMicrochip() != null ? mascota.getMicrochip().getId() : null);
             stmt.setInt(7, mascota.getId());

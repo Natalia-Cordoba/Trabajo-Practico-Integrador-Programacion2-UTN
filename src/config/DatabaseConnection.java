@@ -17,7 +17,7 @@ public class DatabaseConnection {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Error: No se encontró el driver JDBC.", e);
+            throw new RuntimeException(e);
         }
     }
     public static Connection getConnection() throws SQLException {

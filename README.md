@@ -29,13 +29,14 @@ Puede existir una mascota sin microchip y un microchip que aun no fue implantado
 La eliminación de los registros es lógica, se setea el campo eliminado en TRUE y se excluye de la consulta de microchips o mascotas activas.
 
 
-## Requisitos #WIP
+## Requisitos
 - Programa de manejo de bases de datos sql. Por ejemplo: mySQL Workbench, xampp y myPhp Admin. Los scripts de creacion de la DB fueron testeados en mySQL Workbench
 - Terminal o Consola para ejecutar los comandos de la app
 
 ## Pasos para crear la base de datos a partir del .sql
 Paso 1) Ejecutar el script creaciondb.sql
-PAso 2) Ejecutar el script datos_de_prueba.sql para insertar mascotas y microchips
+
+Paso 2) Ejecutar el script datos_de_prueba.sql para insertar mascotas y microchips
 
 El script creaciondb.sql contiene los siguientes sql statements:
 1) Creación de la base de datos con nombre mascota_microchips
@@ -55,3 +56,10 @@ El script datos_de_prueba.sql contiene 5 mascotas con 5 microchips asociados. To
 Todas las mascotas tienen microchip y todos los microchips están referenciados en estas mascotas.
 
 ## Instrucciones para compilar y ejecutar
+
+1) Ir al archivo Main.java y ejecutar la clase Main.
+2) La consola mostrará las operaciones disponibles: insertar microchip, insertar mascota, buscar mascota por id de microchip, buscar microchip por id de mascota, eliminar mascota, eliminar microchip, listar mascotas y listar microchips.
+3) Si se ehecutó el scrip de insercion de datos de prueba, puede listar las mascotas y microchips ya cargados con la opcion 2 para mascotas y 7 para microchips.
+4) Primero crear un microchip, luego crear una mascota.
+5) Asociar el microchip a la mascota con la funcion 9 "Asignar microchip a mascota"
+6) Si se desea eliminar la relacion entre mascota y microchip, seleccionar la opcion 10 "Eliminar microchip de mascota"

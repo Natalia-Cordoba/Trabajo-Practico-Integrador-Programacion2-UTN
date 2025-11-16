@@ -29,7 +29,9 @@ public class Microchip extends Base {
     }
 
     public void setCodigo(String codigo) {
-        this.codigo = codigo;
+        if (codigo != null && !codigo.trim().isEmpty()) {
+            this.codigo = codigo;
+        }
     }
 
     public String getObservaciones() {
@@ -37,7 +39,9 @@ public class Microchip extends Base {
     }
 
     public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
+        if (observaciones != null && !observaciones.trim().isEmpty()) {
+            this.observaciones = observaciones;
+        }
     }
 
     public String getVeterinaria() {
@@ -45,15 +49,27 @@ public class Microchip extends Base {
     }
 
     public void setVeterinaria(String veterinaria) {
-        this.veterinaria = veterinaria;
+        if (veterinaria != null && !veterinaria.trim().isEmpty()) {
+            this.veterinaria = veterinaria;
+        }
+
     }
 
     public LocalDate getFechaImplantacion() {
         return fechaImplantacion;
     }
 
-    public void setFechaImplantacion(LocalDate fechaImplantacion) {
-        this.fechaImplantacion = fechaImplantacion;
+    public void setFechaImplantacion(String fechaImplantacion) {
+        LocalDate fecha;
+        if (fechaImplantacion != null && !fechaImplantacion.trim().isEmpty()) {
+            try {
+                fecha = LocalDate.parse(fechaImplantacion);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Formato de fecha inválido. Use AAAA-MM-DD.");
+            }
+
+            this.fechaImplantacion = fecha;
+        }
     }
 
     @Override

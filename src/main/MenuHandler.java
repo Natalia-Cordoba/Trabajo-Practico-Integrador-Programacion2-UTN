@@ -1,12 +1,15 @@
 package main;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
 import models.Mascota;
 import models.Microchip;
 import service.MascotaService;
 import service.MicrochipService;
+
 
 
 public class MenuHandler {
@@ -60,15 +63,26 @@ public class MenuHandler {
         System.out.println("\n--- Lista de Mascotas ---");
         try {
             List<Mascota> mascotas = mascotaService.getAll();
-            if (mascotas.isEmpty()) {
-                System.out.println("No hay mascotas registradas.");
-            } else {
-                for (Mascota m : mascotas) {
-                    System.out.println(m);
-                }
-            }
+
+            String[] headers = new String[] { "ID", "NOMBRE", "ESPECIE", "RAZA", "FECHA_NAC", "DUEÑO", "MICROCHIP" };
+
+            List<java.util.function.Function<Mascota, String>> extractors = new ArrayList<>();
+            extractors.add(m -> String.valueOf(m.getId()));
+            extractors.add(m -> m.getNombre());
+            extractors.add(m -> m.getEspecie());
+            extractors.add(m -> m.getRaza());
+            extractors.add(m -> String.valueOf(m.getFechaNacimiento()));
+            extractors.add(m -> m.getDuenio());
+            extractors.add(m -> m.getMicrochip() != null ? m.getMicrochip().getCodigo() : "-");
+
+            TablePrinter.printTable(mascotas, "MASCOTAS", headers, extractors);
+
+            // presionar cualquier tecla para continuar
+            esperar_tecla();
+
         } catch (Exception e) {
             System.out.println("Error al listar mascotas: " + e.getMessage());
+            esperar_tecla();
         }
     }
 
@@ -78,6 +92,12 @@ public class MenuHandler {
         try {
             System.out.print("ID de mascota: ");
             int id = Integer.parseInt(scanner.nextLine());
+            // buscar mascota por id
+            Mascota mascota = mascotaService.getById(id);
+            if (mascota == null) {
+                System.out.println("Mascota no encontrada.");
+                return;
+            }
 
             System.out.print("Nuevo nombre: ");
             String nombre = scanner.nextLine();
@@ -94,16 +114,15 @@ public class MenuHandler {
             System.out.print("Nuevo dueño: ");
             String duenio = scanner.nextLine();
 
-            Mascota mascota = new Mascota();
-            mascota.setId(id);
             mascota.setNombre(nombre);
             mascota.setEspecie(especie);
             mascota.setRaza(raza);
-            mascota.setFechaNacimiento(LocalDate.parse(fechaNacimiento));
+            mascota.setFechaNacimiento(fechaNacimiento);
             mascota.setDuenio(duenio);
 
             mascotaService.actualizar(mascota);
             System.out.println("Mascota actualizada con éxito.");
+
         } catch (Exception e) {
             System.out.println("Error al actualizar mascota: " + e.getMessage());
         }
@@ -154,12 +173,24 @@ public class MenuHandler {
 
     public void listarMicrochips() {
         System.out.println("\n--- Lista de Microchips ---");
-        
         try {
             List<Microchip> lista = microchipService.getAll();
-            lista.forEach(System.out::println);
+
+            String[] headers = new String[] { "ID", "CODIGO", "FECHA_IMPL", "VETERINARIA", "OBSERVACIONES" };
+            List<java.util.function.Function<Microchip, String>> extractors = new ArrayList<>();
+            extractors.add(m -> String.valueOf(m.getId()));
+            extractors.add(m -> m.getCodigo());
+            extractors.add(m -> String.valueOf(m.getFechaImplantacion()));
+            extractors.add(m -> m.getVeterinaria());
+            extractors.add(m -> m.getObservaciones());
+
+            TablePrinter.printTable(lista, "MICROCHIPS", headers, extractors);
+
+            esperar_tecla();
+
         } catch (Exception e) {
             System.out.println("Error al listar microchips: " + e.getMessage());
+            esperar_tecla();
         }
     }
 
@@ -169,6 +200,11 @@ public class MenuHandler {
         try {
             System.out.print("ID del microchip: ");
             int id = Integer.parseInt(scanner.nextLine());
+            Microchip microchip = microchipService.getById(id);
+            if (microchip == null) {
+                System.out.println("Microchip no encontrado.");
+                return;
+            }
 
             System.out.print("Nuevo código: ");
             String codigo = scanner.nextLine();
@@ -182,11 +218,18 @@ public class MenuHandler {
             System.out.print("Nuevas observaciones: ");
             String obs = scanner.nextLine();
 
-            Microchip microchip = new Microchip(id, codigo, obs, vet, LocalDate.parse(fecha));
+            microchip.setCodigo(codigo);
+            microchip.setFechaImplantacion(fecha);
+            microchip.setVeterinaria(vet);
+            microchip.setObservaciones(obs);
+
             microchipService.actualizar(microchip);
             System.out.println("Microchip actualizado con éxito.");
+            esperar_tecla();
+
         } catch (Exception e) {
             System.out.println("Error al actualizar microchip: " + e.getMessage());
+            esperar_tecla();
         }
     }
 
@@ -261,5 +304,15 @@ public class MenuHandler {
             System.out.println("Error al eliminar microchip de la mascota: " + e.getMessage());
         }
     }
+
+    // ---------------------------
+    //      FUNCION AUXILIAR PARA LA CONSOLA: espera que el usuario presione alguna tecla
+    // ---------------------------
+
+    public void esperar_tecla() {
+        System.out.print("Presione una tecla para continuar...");
+        scanner.nextLine();
+    }
+
     
 }
