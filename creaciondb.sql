@@ -1,6 +1,6 @@
 -- creaciondb.sql
 
-CREATE DATABASE mascota_microchips;
+CREATE DATABASE IF NOT EXISTS mascota_microchips;
 USE mascota_microchips;
 
 -- Desactivar temporalmente las comprobaciones de integridad referencial
@@ -15,7 +15,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- Crear tabla `microchip` primero
 CREATE TABLE IF NOT EXISTS Microchip (
-	id BIGINT PRIMARY KEY,
+	id BIGINT PRIMARY KEY  NOT NULL AUTO_INCREMENT,
 	eliminado BOOLEAN NOT NULL,
 	codigo VARCHAR(25) NOT NULL UNIQUE,
 	CHECK(codigo REGEXP '^[A-Z]{4}-[0-9]{20}$'),
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Microchip (
 
 -- Crear tabla `mascota` que referencia a `microchip`
 CREATE TABLE IF NOT EXISTS Mascota (
-    id BIGINT PRIMARY KEY,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
     eliminado TINYINT(1) NOT NULL,
     nombre VARCHAR(60) NOT NULL,
     especie VARCHAR(30) NOT NULL,
@@ -36,3 +36,4 @@ CREATE TABLE IF NOT EXISTS Mascota (
     microchip_id BIGINT UNIQUE,
     FOREIGN KEY (microchip_id) REFERENCES Microchip(id) ON DELETE CASCADE
 );
+

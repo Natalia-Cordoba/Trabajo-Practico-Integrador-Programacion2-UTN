@@ -6,19 +6,13 @@ package service;
 
 import dao.GenericDAO;
 import models.Mascota;
+import service.Operacion;
 
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Servicio de negocio para Mascota.
- * Coordina operaciones con Microchip de forma transaccional.
- *
- * Responsabilidades:
- * - Validar datos de la mascota (raza, dueño, fechaNacimiento)
- * - Garantizar relación 1→1 con Microchip
- * - Manejar transacciones compuestas: crear mascota + crear microchip
- */
+
 public class MascotaService implements GenericService<Mascota> {
 
     private final GenericDAO<Mascota> mascotaDAO;
@@ -38,7 +32,7 @@ public class MascotaService implements GenericService<Mascota> {
 
     @Override
     public void insertar(Mascota mascota) throws Exception {
-        validateMascota(mascota);
+        validateMascota(mascota, Operacion.INSERTAR);
 
         try {
             connection.setAutoCommit(false);
@@ -65,7 +59,7 @@ public class MascotaService implements GenericService<Mascota> {
 
     @Override
     public void actualizar(Mascota mascota) throws Exception {
-        validateMascota(mascota);
+        validateMascota(mascota, Operacion.ACTUALIZAR);
         if (mascota.getId() <= 0) {
             throw new IllegalArgumentException("El ID de la mascota debe ser mayor a 0");
         }
@@ -89,14 +83,21 @@ public class MascotaService implements GenericService<Mascota> {
         return mascotaDAO.getAll();
     }
 
-    private void validateMascota(Mascota mascota) {
+    private void validateMascota(Mascota mascota, Operacion operacion ) {
         if (mascota == null) throw new IllegalArgumentException("La mascota no puede ser null");
+
+        if (mascota.getFechaNacimiento().isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("La fecha de nacimiento no puede ser futura");
+        }
+
         if (mascota.getRaza() != null && mascota.getRaza().length() > 60) {
             throw new IllegalArgumentException("La raza no puede superar 60 caracteres");
         }
-        if (mascota.getDuenio() == null || mascota.getDuenio().trim().isEmpty()) {
+
+        if (operacion == Operacion.INSERTAR && (mascota.getDuenio() == null || mascota.getDuenio().trim().isEmpty())) {
             throw new IllegalArgumentException("El dueño es obligatorio");
         }
+
         if (mascota.getDuenio().length() > 120) {
             throw new IllegalArgumentException("El nombre del dueño no puede superar 120 caracteres");
         }

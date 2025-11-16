@@ -32,7 +32,9 @@ public class Mascota extends Base {
     }
 
     public void setNombre(String nombre) {
-        this.nombre = nombre;
+        if (nombre != null && !nombre.trim().isEmpty()) {
+            this.nombre = nombre;
+        }
     }
 
     public String getEspecie() {
@@ -40,7 +42,9 @@ public class Mascota extends Base {
     }
 
     public void setEspecie(String especie) {
-        this.especie = especie;
+        if (especie != null && !especie.trim().isEmpty()) {
+            this.especie = especie;
+        }
     }
 
     public String getRaza() {
@@ -48,15 +52,27 @@ public class Mascota extends Base {
     }
 
     public void setRaza(String raza) {
-        this.raza = raza;
+        if (raza != null && !raza.trim().isEmpty()) {
+            this.raza = raza;
+        }
     }
 
     public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
 
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
+    public void setFechaNacimiento(String fechaNacimiento) {
+        LocalDate fecha;
+        if (fechaNacimiento != null && !fechaNacimiento.trim().isEmpty()) {
+            try {
+                fecha = LocalDate.parse(fechaNacimiento);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Formato de fecha inválido. Use AAAA-MM-DD.");
+            }
+
+            this.fechaNacimiento = fecha;
+        }
+
     }
 
     public String getDuenio() {
@@ -64,7 +80,9 @@ public class Mascota extends Base {
     }
 
     public void setDuenio(String duenio) {
-        this.duenio = duenio;
+        if (duenio != null && !duenio.trim().isEmpty()) {
+            this.duenio = duenio;
+        }
     }
 
     public Microchip getMicrochip() {
