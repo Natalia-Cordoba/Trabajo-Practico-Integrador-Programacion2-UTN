@@ -10,10 +10,11 @@ import models.Mascota;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import models.Microchip;
 
 public class MascotaDAO implements GenericDAO<Mascota> {
     
-    // Métodos para conexión interna 
+    // Métodos para CRUD con conexión interna 
     // Delegan a los métodos con la Connection para no duplicar código
     @Override
     public void insertar(Mascota mascota) throws Exception {
@@ -50,25 +51,17 @@ public class MascotaDAO implements GenericDAO<Mascota> {
         }
     }
     
-    // Metodos para conexión externa 
-    // Ejecuta la lógica real con PreparedStatement
+    // Metodos para CRUD con conexión externa 
+    // Ejecutan la lógica real con PreparedStatement
     @Override
     public void insertar(Mascota mascota, Connection conn) throws Exception {
-        String sql = "INSERT INTO Mascota (id, eliminado, nombre, especie, raza, fechaNacimiento, duenio, microchip_id) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Mascota (eliminado, nombre, especie, raza, fechaNacimiento, duenio, microchip_id) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, mascota.getId());
-            stmt.setBoolean(2, mascota.isEliminado());
-            stmt.setString(3, mascota.getNombre());
-            stmt.setString(4, mascota.getEspecie());
-            stmt.setString(5, mascota.getRaza());
-            stmt.setDate(6, mascota.getFechaNacimiento() != null ?
-                    Date.valueOf(mascota.getFechaNacimiento()) : null);
-            stmt.setString(7, mascota.getDuenio());
-            stmt.setObject(8, mascota.getMicrochip() != null ? mascota.getMicrochip().getId() : null);
-
+            setMascotaParameters(stmt, mascota);
             stmt.executeUpdate();
+            setGeneratedId(stmt, mascota);
         }
     }
 
@@ -84,10 +77,13 @@ public class MascotaDAO implements GenericDAO<Mascota> {
             stmt.setString(3, mascota.getRaza());
             stmt.setDate(4, Date.valueOf(mascota.getFechaNacimiento()));
             stmt.setString(5, mascota.getDuenio());
-            stmt.setObject(6, mascota.getMicrochip() != null ? mascota.getMicrochip().getId() : null);
+            setMicrochipId(stmt, 6, mascota.getMicrochip());
             stmt.setInt(7, mascota.getId());
 
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No se pudo actualizar la mascota con ID: " + mascota.getId());
+            }
         }
     }
 
@@ -97,7 +93,10 @@ public class MascotaDAO implements GenericDAO<Mascota> {
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
-            stmt.executeUpdate();
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new SQLException("No se encontró la mascota con ID: " + id);
+            }
         }
     }
 
@@ -105,32 +104,16 @@ public class MascotaDAO implements GenericDAO<Mascota> {
     public Mascota getById(int id, Connection conn) throws Exception {
         String sql = "SELECT * FROM Mascota WHERE id = ? AND eliminado = FALSE";
 
-        Mascota mascota = null;
-
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    mascota = new Mascota(
-                            rs.getInt("id"),
-                            rs.getString("nombre"),
-                            rs.getString("especie"),
-                            rs.getString("raza"),
-                            rs.getDate("fechaNacimiento") != null ?
-                                    rs.getDate("fechaNacimiento").toLocalDate() : null,
-                            rs.getString("duenio")
-                    );
-
-                    int microchipId = rs.getInt("microchip_id");
-                    if (!rs.wasNull()) {
-                        MicrochipDAO microchipDAO = new MicrochipDAO();
-                        mascota.setMicrochip(microchipDAO.getById(microchipId, conn));
-                    }
+                    return mapResultSetToMascota(rs, conn);
                 }
-            }
+            } 
         }
-        return mascota;
+        return null;
     }
 
     @Override
@@ -142,26 +125,70 @@ public class MascotaDAO implements GenericDAO<Mascota> {
             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                Mascota mascota = new Mascota(
-                        rs.getInt("id"),
-                        rs.getString("nombre"),
-                        rs.getString("especie"),
-                        rs.getString("raza"),
-                        rs.getDate("fechaNacimiento") != null ?
-                                rs.getDate("fechaNacimiento").toLocalDate() : null,
-                        rs.getString("duenio")
-                );
-                
-                int microchipId = rs.getInt("microchip_id");
-                if (!rs.wasNull()) {
-                    MicrochipDAO microchipDAO = new MicrochipDAO();
-                    mascota.setMicrochip(microchipDAO.getById(microchipId, conn));
-                }
-                
-                listaMascotas.add(mascota);
+                listaMascotas.add(mapResultSetToMascota(rs, conn));
             }
-        }
+        } 
         return listaMascotas;
     }
     
+    // Métodos Auxiliares
+    // Seteamos los parámetros comunes de Mascota en un PreparedStatement
+    private void setMascotaParameters(PreparedStatement stmt, Mascota mascota) throws SQLException {
+        stmt.setBoolean(1, mascota.isEliminado());
+        stmt.setString(2, mascota.getNombre());
+        stmt.setString(3, mascota.getEspecie());
+        stmt.setString(4, mascota.getRaza());
+        stmt.setDate(5,
+                mascota.getFechaNacimiento() != null
+                        ? Date.valueOf(mascota.getFechaNacimiento())
+                        : null
+        );
+        stmt.setString(6, mascota.getDuenio());
+        setMicrochipId(stmt, 7, mascota.getMicrochip());
+    }
+    
+    // Obtenemos el ID generado automáticamente y lo guardamos en el objeto
+    private void setGeneratedId(PreparedStatement stmt, Mascota mascota) throws SQLException {
+        try (ResultSet rs = stmt.getGeneratedKeys()) {
+            if (rs.next()) {
+                mascota.setId(rs.getInt(1));
+            } else {
+                throw new SQLException("La inserción de la mascota falló, no se obtuvo ID generado");
+            }
+        }
+    }
+    
+    // Permitimos modificar el id del microchip
+    private void setMicrochipId(PreparedStatement stmt, int parameterIndex, Microchip microchip) throws SQLException {
+        if (microchip != null && microchip.getId() > 0) {
+            stmt.setInt(parameterIndex, microchip.getId());
+        } else {
+            stmt.setNull(parameterIndex, Types.INTEGER);
+        }
+    }
+    
+    // Convertimos un ResultSet en un objeto Mascota
+    // Evita repetir la creación de objetos en getById, getAll
+    private Mascota mapResultSetToMascota(ResultSet rs, Connection conn) throws Exception {
+        Mascota mascota = new Mascota(
+            rs.getInt("id"),
+            rs.getString("nombre"),
+            rs.getString("especie"),
+            rs.getString("raza"),
+            rs.getDate("fechaNacimiento") != null 
+                ? rs.getDate("fechaNacimiento").toLocalDate() 
+                : null,
+            rs.getString("duenio")
+        );
+
+        // Agregar el microchip si existe
+        int microchipId = rs.getInt("microchip_id");
+        if (!rs.wasNull()) {
+            MicrochipDAO microchipDAO = new MicrochipDAO();
+            mascota.setMicrochip(microchipDAO.getById(microchipId, conn));
+        }
+
+        return mascota;
+    }
+
 }
