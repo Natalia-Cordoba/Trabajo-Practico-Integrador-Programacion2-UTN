@@ -63,7 +63,7 @@ public class MicrochipDAO implements GenericDAO<Microchip> {
         String sql = "INSERT INTO Microchip (eliminado, codigo, fechaImplantacion, veterinaria, observaciones) " +
                      "VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             setMicrochipParameters(stmt, microchip);
             stmt.executeUpdate();
             setGeneratedId(stmt, microchip);

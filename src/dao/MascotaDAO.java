@@ -58,7 +58,7 @@ public class MascotaDAO implements GenericDAO<Mascota> {
         String sql = "INSERT INTO Mascota (eliminado, nombre, especie, raza, fechaNacimiento, duenio, microchip_id) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             setMascotaParameters(stmt, mascota);
             stmt.executeUpdate();
             setGeneratedId(stmt, mascota);
