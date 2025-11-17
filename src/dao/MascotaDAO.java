@@ -158,7 +158,7 @@ public class MascotaDAO implements GenericDAO<Mascota> {
         }
     }
     
-    // Permitimos modificar el id del microchip
+    // Asignamos el ID del microchip solo si es válido; si no guardamos NULL
     private void setMicrochipId(PreparedStatement stmt, int parameterIndex, Microchip microchip) throws SQLException {
         if (microchip != null && microchip.getId() > 0) {
             stmt.setInt(parameterIndex, microchip.getId());
@@ -181,7 +181,7 @@ public class MascotaDAO implements GenericDAO<Mascota> {
             rs.getString("duenio")
         );
 
-        // Agregar el microchip si existe
+        // Si la mascota tiene un microchip asociado, lo obtenemos usando la misma conexión
         int microchipId = rs.getInt("microchip_id");
         if (!rs.wasNull()) {
             MicrochipDAO microchipDAO = new MicrochipDAO();
