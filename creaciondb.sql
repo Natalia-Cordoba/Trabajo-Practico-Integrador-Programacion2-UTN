@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS `microchip`;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Crear tabla `microchip` primero
-CREATE TABLE IF NOT EXISTS Microchip (
+CREATE TABLE IF NOT EXISTS microchip (
 	id BIGINT PRIMARY KEY  NOT NULL AUTO_INCREMENT,
 	eliminado BOOLEAN NOT NULL,
 	codigo VARCHAR(25) NOT NULL UNIQUE,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS Microchip (
 );
 
 -- Crear tabla `mascota` que referencia a `microchip`
-CREATE TABLE IF NOT EXISTS Mascota (
+CREATE TABLE IF NOT EXISTS mascota (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     eliminado TINYINT(1) NOT NULL,
     nombre VARCHAR(60) NOT NULL,
@@ -34,6 +34,6 @@ CREATE TABLE IF NOT EXISTS Mascota (
     fechaNacimiento DATE,
     duenio VARCHAR(120) NOT NULL,
     microchip_id BIGINT UNIQUE,
-    FOREIGN KEY (microchip_id) REFERENCES Microchip(id) ON DELETE CASCADE
+    FOREIGN KEY (microchip_id) REFERENCES microchip(id) ON DELETE CASCADE
 );
 
