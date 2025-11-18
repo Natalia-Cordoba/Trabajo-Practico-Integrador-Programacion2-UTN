@@ -5,7 +5,7 @@ Trabajo Final Integrador de Programación II – Sistema de gestión de mascotas
 
 ## Video Explicativo
 
-[Ver video explicativo](poner después el link al video)
+[Ver video explicativo](https://drive.google.com/file/d/1TRLh1JREfzsuzqFaLv-63C71E4lyCRTc/view)
 
 ---
 
@@ -32,6 +32,7 @@ La eliminación de los registros es lógica, se setea el campo eliminado en TRUE
 ## Requisitos
 - Programa de manejo de bases de datos sql. Por ejemplo: mySQL Workbench, xampp y myPhp Admin. Los scripts de creacion de la DB fueron testeados en mySQL Workbench
 - Terminal o Consola para ejecutar los comandos de la app
+- Instalar el driver JDBC para MySQL. Descargar el conector desde: https://dev.mysql.com/downloads/connector/j/
 
 ## Pasos para crear la base de datos a partir del .sql
 Paso 1) Ejecutar el script creaciondb.sql
